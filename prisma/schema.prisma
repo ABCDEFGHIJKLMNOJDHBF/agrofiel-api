@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    String @id @default(uuid())
+  email String @unique
+  name  String
+
+  farms Farm[]
+}
+
+model Farm {
+  id        String   @id @default(uuid())
+  name      String
+  ownerId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner     User     @relation(fields: [ownerId], references: [id])
+  setting   Setting?
+}
+
+model Setting {
+  id         String   @id @default(uuid())
+  farmId     String   @unique
+  currency   String   @default("DHs")
+  salaryBase Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  farm       Farm     @relation(fields: [farmId], references: [id])
+}
